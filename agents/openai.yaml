@@ -1,6 +1,6 @@
 interface:
-  display_name: "Ian 小鸽钉配图视频"
-  short_description: "生成小鸽钉正文配图和SRT同步手绘字幕视频"
-  default_prompt: "Use $ian-xiaogeding-illustrations to 根据这份中文 SRT/TXT 字幕生成小鸽钉手绘错觉字幕视频。"
+  display_name: "Ian 彩色手绘配图视频"
+  short_description: "自动选择叙事或知识拼贴模式，生成克制彩色手绘配图与视频"
+  default_prompt: "Use $ian-xiaogeding-illustrations to 根据这份中文脚本自动选择模式并生成克制彩色的手绘配图或字幕视频。"
 policy:
   allow_implicit_invocation: true

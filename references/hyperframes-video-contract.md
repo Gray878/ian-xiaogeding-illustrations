@@ -32,7 +32,7 @@ compositions/
 01-topic.png
 ```
 
-`DESIGN.md` 必须从本 skill 的 `style-dna.md` 生成，并至少固定：纯白背景、黑色微抖线稿、灰白小鸽钉、克制的红橙蓝、充足留白、冷静怪诞、禁止 PPT/商业插画/儿童卡通/真实 UI。
+`DESIGN.md` 必须从本 skill 的 `style-dna.md`、`color-system.md` 和每个场景已锁定的模式生成，并至少固定：纯白背景、细黑微抖轮廓、可见的低饱和彩色平涂、充足留白、冷静怪诞、禁止黑白线稿加零星点缀、密集 PPT/商业插画/儿童卡通/真实 UI。仅在小鸽钉单核叙事场景中固定带主色平涂的小鸽钉；知识拼贴场景默认不出现它。
 
 `timeline.json` 是时间主表。每个场景至少包含：
 
@@ -42,6 +42,7 @@ compositions/
   "start": 0.0,
   "end": 8.4,
   "cueIndexes": [1, 2],
+  "mode": "xiaogeding-narrative",
   "image": "01-topic.png",
   "captionPlacement": "bottom-safe-area",
   "transition": "paper-wipe"
@@ -53,8 +54,9 @@ compositions/
 ```json
 {
   "sceneId": "scene-01",
-  "id": "pigeon-connects-cable",
-  "kind": "character",
+  "id": "primary-subject",
+  "kind": "character-or-anchor",
+  "sourceAtom": "核心动作或中心命题",
   "start": 2.1,
   "end": 2.9,
   "mask": "polygon-or-svg-path",
@@ -63,7 +65,7 @@ compositions/
 }
 ```
 
-按叙事顺序揭示：黑色主结构 → 小鸽钉动作 → 关键物件 → 橙色路径/箭头 → 红蓝批注与中文标签。让笔尖略领先遮罩，并沿物体轮廓或阅读方向移动。短 cue 优先更新字幕；长 cue 承担主要揭示；跨 cue 的揭示保持连续。
+对小鸽钉单核叙事，按主物件的彩色平涂 → 细黑主结构 → 小鸽钉的彩色主体和动作 → 关键物件 → 路径/风险色 → 批注与中文标签的顺序揭示。对知识拼贴，按中心锚点的主色色块和轮廓 → 最关键的 2–3 个辅色卫星 → 其余卫星 → 少量关系箭头 → 标签的顺序揭示。彩色块面必须随主体出现，不能等到最后才零星补色。让笔尖略领先遮罩，并沿物体轮廓或阅读方向移动。短 cue 优先更新字幕；长 cue 承担主要揭示；跨 cue 的揭示保持连续。
 
 ## HyperFrames 执行顺序
 
