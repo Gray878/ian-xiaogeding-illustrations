@@ -49,7 +49,12 @@ compositions/
   "mode": "xiaogeding-narrative",
   "image": "01-topic.png",
   "materials": ["02-person.jpg", "03-diagram.svg"],
-  "captionPlacement": "bottom-safe-area",
+  "captionPlacement": "bottom-low-safe-area",
+  "captionBottomPx": 42,
+  "captionReserveHeightPx": 160,
+  "illustrationSafeZones": [
+    {"objectId": "primary-subject", "bbox": [620, 220, 310, 470], "clearancePx": 24}
+  ],
   "transition": "paper-wipe"
 }
 ```
@@ -95,12 +100,20 @@ compositions/
 
 对小鸽钉单核叙事，按主物件的彩色平涂 → 细黑主结构 → 本地素材贴图 → 小鸽钉的彩色主体和动作 → 关键物件 → 路径/风险色 → 批注与中文标签的顺序揭示。对知识拼贴，按中心锚点的主色色块和轮廓 → 关键本地素材贴图 → 最关键的 2–3 个辅色卫星 → 其余卫星 → 少量关系箭头 → 标签的顺序揭示。彩色块面必须随主体出现，不能等到最后才零星补色。让笔尖略领先手绘遮罩，并沿物体轮廓或阅读方向移动。素材贴图独立使用局部裁切揭示和短距离落位，不要求笔尖描摹真实照片。短 cue 优先更新字幕；长 cue 承担主要揭示；跨 cue 的揭示保持连续。
 
+### 字幕基线与素材避让
+
+- 1920×1080 视频的字幕条默认设置 `bottom: 42px`，允许范围为 36–48px。不得默认使用约 80px 的高位字幕；若项目已有更高位置，应下移到该范围并重新检查两行字幕、圆角背景和阴影是否完整处于画布内。
+- 在 `timeline.json` 记录 `captionBottomPx` 和 `captionReserveHeightPx`。所有素材、插画、批注和确定性标签都不得进入实际字幕条占据的矩形；不要只用一条固定水平线估算多行字幕。
+- 每个场景为人物、小鸽钉、核心物件和关键手绘标注登记 `illustrationSafeZones`。每个安全框由对象真实 `bbox` 向外扩 24px；细长手臂、翅膀、箭头和动作道具不能省略。
+- 素材的最终边界框和入场期间的 swept bbox 均不得与任何 `illustrationSafeZones` 相交，交集面积必须为 0。调整层级使插画盖回素材不算通过，因为空间关系仍然冲突；必须移动、缩小或重排素材。
+- 贴图胶带、纸边、说明签和素材自身的旋转外接框都计入素材边界。若素材必须与某个插画建立联系，只允许用位于两者之间的箭头或短连接线，不允许让素材压住人物脸部、身体、手势、核心道具或手绘文字。
+
 ## HyperFrames 执行顺序
 
 1. 使用 `npx hyperframes init <slug> --non-interactive` 初始化项目；不要从零手写项目骨架。
 2. 先把 `material-plan.json` 中允许使用的素材复制到项目 `materials/`，保留原文件名；再将 `DESIGN.md`、SRT、时间表和揭示计划放入项目。将 JSON 作为上游事实来源，在生成阶段编译为同步的 HTML/GSAP 场景；不要在浏览器运行时异步 `fetch` JSON 后再创建时间线。
 3. 为每个场景先完成“白纸底 + 独立素材贴图 + 手绘层 + 确定性文字”的静态英雄帧布局，再添加 GSAP 动画。素材必须是可检查的 `<img>` 或安全内联 SVG 层，不得先交给 `image_gen` 烘焙。手绘层使用 SVG mask、`clip-path` 或等价局部揭示；遮罩解析器至少支持当前计划实际使用的 `path`、`polygon`、`ellipse` 或多段遮罩，不能只支持单一 `circle(...)` 却在计划中假装记录对象轮廓。不要用整图淡入或全屏擦除冒充手绘。
-4. 使用 `hyperframes` 的字幕、排版、转场与时间线规范。字幕在底部安全区，高对比、字号稳定，不能遮住主体或关键批注。
+4. 使用 `hyperframes` 的字幕、排版、转场与时间线规范。字幕按 `captionBottomPx: 42` 放在更靠下的底部安全区，高对比、字号稳定，不能遮住主体或关键批注。
 5. 只使用白纸感擦除、纸张滑入或翻页等轻量转场。每个多场景视频都要有转场，且不能在转场前把上一场景提前淡出。
 6. 不添加音频元素、TTS 或背景音乐，直到用户明确提出音频需求。
 
@@ -124,9 +137,11 @@ npx hyperframes render --output ../../renders/<slug>.mp4 --quality standard
 - 对象边界不能贴着遮罩硬切；必须保留 `safetyMarginPx`，默认 12–24px。遮罩扩大后若暴露相邻对象，改用轮廓路径或独立分层。
 - `resolved` 终态切换前后不得出现可见跳变；出现跳变说明局部遮罩漏画，必须回到 `reveal-plan.json` 修复。
 
+对每项素材还必须在入场开始、50% 进度和落位后三处抽帧：计算素材外接框与所有 `illustrationSafeZones` 的交集，三处都必须为 0；同时记录字幕条实际底边距，必须在 36–48px 内。任何一处素材覆盖插画或字幕位置回升到默认范围之外都直接失败，修复布局后重新跑检查与渲染。
+
 将逐对象结果记录在项目 `QA.md`，至少包含 `sceneId`、`objectId`、两处采样时间、覆盖率、缺失部件和通过/失败。不能只写“已肉眼检查”。若失败，先修复 `timeline.json` 或 `reveal-plan.json`，再改合成代码并重新检查。
 
-同时核对 `material-plan.json`：已选素材在对应场景中可辨认地出现至少 1.5 秒；贴图通过局部裁切、短距离滑入和轻旋转平滑落位；文档、肖像和图表没有被错误裁切；相关可发布素材覆盖率达到 60% 或逐项说明例外；署名与 `ATTRIBUTION.md` 一致。
+同时核对 `material-plan.json`：已选素材在对应场景中可辨认地出现至少 1.5 秒；贴图通过局部裁切、短距离滑入和轻旋转平滑落位；文档、肖像和图表没有被错误裁切；最终框与 swept bbox 未进入插画安全框；相关可发布素材覆盖率达到 60% 或逐项说明例外；署名与 `ATTRIBUTION.md` 一致。
 
 ## 交付
 

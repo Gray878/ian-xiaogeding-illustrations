@@ -85,9 +85,11 @@ description: 生成 Ian 风格的中文正文配图，并把 SRT/TXT 字幕稿�
 
 人物、小鸽钉和核心物件属于**完整性对象**：允许在动画内部拆成头部、躯干、肢体、动作和道具等多个揭示局部，但场景结束前必须完整显示该对象的所有可见部分。不得用一个凭经验放置的圆形遮罩代表整个人物，也不得让铅笔路径决定最终覆盖范围；铅笔只表现当前绘制方向，实际覆盖必须来自对象真实边界、透明分层或带安全边距的多段 SVG 遮罩。每个完整性对象都要在 `reveal-plan.json` 记录真实 `bbox`、`requiredParts`、最终完整状态和覆盖阈值，并按 `references/hyperframes-video-contract.md` 完成逐对象最终帧检查。人物缺头、缺肢体，核心道具被截断，或最终仍有应显示内容未揭示，直接判定视频未完成。
 
+字幕默认进一步贴近画面底部：1920×1080 成片使用 `captionBottomPx: 42`，允许范围为 36–48px；除非用户明确要求，不得沿用约 80px 的高位字幕。字幕仍须完整处于画布内，并为两行文字保留足够内边距。素材贴图不得覆盖插画：先登记人物、角色、核心物件和关键手绘标注的安全框，再让素材最终框及整个入场轨迹与这些安全框至少间隔 24px；空间不足时重排或缩小素材，不能只靠调整 `z-index` 掩盖重叠。具体字段与抽帧门禁见 `references/material-integration.md` 和 `references/hyperframes-video-contract.md`。
+
 ### 6. 检查、迭代与保存
 
-使用已锁定模式的 QA 清单和素材集成 QA。静态图默认保存到 `assets/<article-slug>-illustrations/`，按 `01-topic-name.png` 编号；不要覆盖已有资产。视频必须在每个场景最后一次揭示完成后和场景结束前分别抽帧，逐个核对完整性对象与静态英雄帧；不能只检查画面中心或依赖肉眼扫一遍。视频项目使用 `video-projects/<slug>/`，最终视频保存到 `renders/<slug>.mp4`，并保留 `DESIGN.md`、字幕、时间表、`material-plan.json`、`ATTRIBUTION.md` 和揭示计划。
+使用已锁定模式的 QA 清单和素材集成 QA。静态图默认保存到 `assets/<article-slug>-illustrations/`，按 `01-topic-name.png` 编号；不要覆盖已有资产。视频必须在每个场景最后一次揭示完成后和场景结束前分别抽帧，逐个核对完整性对象与静态英雄帧；同时在每项素材入场的开始、中间、结束三处检查素材与插画安全框的交集，并核对字幕底边距。不能只检查画面中心或依赖肉眼扫一遍。视频项目使用 `video-projects/<slug>/`，最终视频保存到 `renders/<slug>.mp4`，并保留 `DESIGN.md`、字幕、时间表、`material-plan.json`、`ATTRIBUTION.md` 和揭示计划。
 
 ## 输出口径
 
