@@ -1,4 +1,4 @@
 interface:
-  display_name: "Ian 素材贴图手绘视频"
-  short_description: "优先复用本地素材，生成 Ian 手绘贴图配图与视频"
-  default_prompt: "Use $ian-xiaogeding-illustrations to 读取这份稿件及其配套 materials 素材，制作素材贴图平滑入场的 Ian 手绘配图或视频。"
+  display_name: "Ian 小鸽钉手绘视频"
+  short_description: "锁定小鸽钉角色一致性，复用素材生成 Ian 手绘配图与视频"
+  default_prompt: "Use $ian-xiaogeding-illustrations to 读取稿件和配套素材，以真实角色参考锁定同一个小鸽钉 IP，并生成 Ian 手绘配图或视频。"

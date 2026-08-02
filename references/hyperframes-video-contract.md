@@ -27,16 +27,20 @@ SCRIPT.md                 # 用户原始 SRT 时可只保留摘要和场景说�
 captions.srt
 timeline.json
 material-plan.json
+character-reference.json   # 出现小鸽钉时必需；记录真实参考图输入与跨场景身份 QA
 ATTRIBUTION.md
 reveal-plan.json
 QA.md                     # 逐对象最终态与覆盖率检查
 index.html
 materials/
+characters/               # 独立透明小鸽钉姿态层；出现小鸽钉时优先使用
 compositions/
   01-topic.png
 ```
 
-`DESIGN.md` 必须从本 skill 的 `style-dna.md`、`color-system.md` 和每个场景已锁定的模式生成，并至少固定：纯白背景、细黑微抖轮廓、可见的低饱和彩色平涂、充足留白、冷静怪诞、禁止黑白线稿加零星点缀、密集 PPT/商业插画/儿童卡通/图像模型生成的假 UI。经过素材审计的真实文档、图表和 SVG 应作为局部贴图保留。仅在小鸽钉单核叙事场景中固定带主色平涂的小鸽钉；知识拼贴场景默认不出现它。
+`DESIGN.md` 必须从本 skill 的 `style-dna.md`、`color-system.md` 和每个场景已锁定的模式生成，并至少固定：纯白背景、细黑微抖轮廓、可见的低饱和彩色平涂、充足留白、冷静怪诞、禁止黑白线稿加零星点缀、密集 PPT/商业插画/儿童卡通/图像模型生成的假 UI。经过素材审计的真实文档、图表和 SVG 应作为局部贴图保留。仅在小鸽钉单核叙事场景中使用小鸽钉，并固定 `xiaogeding-v1` 的浅雾蓝连续头身轮廓、豆眼、短橙嘴、细腿、短翅和芥黄色斜挎包；知识拼贴场景默认不出现它。
+
+出现小鸽钉时，先按 `character-consistency.md` 创建 `character-reference.json`。每个小鸽钉场景都必须记录角色层输出、生成方式、真实参考图输入状态、身份来源验证与身份 QA；`reference-image` / `image-edit` 必须真实传入参考图，`reused-layer` / `deterministic-svg` 必须验证身份来源。任何身份来源或 `identityQa` 未通过的场景不得进入渲染。
 
 `timeline.json` 是时间主表。每个场景至少包含：
 
@@ -47,6 +51,7 @@ compositions/
   "end": 8.4,
   "cueIndexes": [1, 2],
   "mode": "xiaogeding-narrative",
+  "characterId": "xiaogeding-v1",
   "image": "01-topic.png",
   "materials": ["02-person.jpg", "03-diagram.svg"],
   "captionPlacement": "bottom-low-safe-area",
@@ -58,6 +63,8 @@ compositions/
   "transition": "paper-wipe"
 }
 ```
+
+`characterId` 只在小鸽钉单核叙事场景出现，并固定为 `xiaogeding-v1`；知识拼贴场景不得填写该字段。
 
 `material-plan.json` 是本地素材使用主表。先按 `material-integration.md` 发现、审计并分类素材，再记录每项素材对应的场景、贴图类型、署名要求、使用或排除决定。存在相关可发布素材但 `materials` 数组全部为空时不得进入渲染。
 
@@ -112,10 +119,11 @@ compositions/
 
 1. 使用 `npx hyperframes init <slug> --non-interactive` 初始化项目；不要从零手写项目骨架。
 2. 先把 `material-plan.json` 中允许使用的素材复制到项目 `materials/`，保留原文件名；再将 `DESIGN.md`、SRT、时间表和揭示计划放入项目。将 JSON 作为上游事实来源，在生成阶段编译为同步的 HTML/GSAP 场景；不要在浏览器运行时异步 `fetch` JSON 后再创建时间线。
-3. 为每个场景先完成“白纸底 + 独立素材贴图 + 手绘层 + 确定性文字”的静态英雄帧布局，再添加 GSAP 动画。素材必须是可检查的 `<img>` 或安全内联 SVG 层，不得先交给 `image_gen` 烘焙。手绘层使用 SVG mask、`clip-path` 或等价局部揭示；遮罩解析器至少支持当前计划实际使用的 `path`、`polygon`、`ellipse` 或多段遮罩，不能只支持单一 `circle(...)` 却在计划中假装记录对象轮廓。不要用整图淡入或全屏擦除冒充手绘。
-4. 使用 `hyperframes` 的字幕、排版、转场与时间线规范。字幕按 `captionBottomPx: 42` 放在更靠下的底部安全区，高对比、字号稳定，不能遮住主体或关键批注。
-5. 只使用白纸感擦除、纸张滑入或翻页等轻量转场。每个多场景视频都要有转场，且不能在转场前把上一场景提前淡出。
-6. 不添加音频元素、TTS 或背景音乐，直到用户明确提出音频需求。
+3. 出现小鸽钉时，先用身份基准图为每个动作生成 `characters/` 下的独立透明角色层；每次调用都真实传入基准图，再把通过身份 QA 的角色层合成到英雄帧。不得为各场景分别纯文字生成整张画面，也不得只用上一场输出递归参考。
+4. 为每个场景完成“白纸底 + 独立素材贴图 + 独立角色层 + 手绘层 + 确定性文字”的静态英雄帧布局，再添加 GSAP 动画。素材必须是可检查的 `<img>` 或安全内联 SVG 层，不得先交给 `image_gen` 烘焙。手绘层使用 SVG mask、`clip-path` 或等价局部揭示；遮罩解析器至少支持当前计划实际使用的 `path`、`polygon`、`ellipse` 或多段遮罩，不能只支持单一 `circle(...)` 却在计划中假装记录对象轮廓。不要用整图淡入或全屏擦除冒充手绘。
+5. 使用 `hyperframes` 的字幕、排版、转场与时间线规范。字幕按 `captionBottomPx: 42` 放在更靠下的底部安全区，高对比、字号稳定，不能遮住主体或关键批注。
+6. 只使用白纸感擦除、纸张滑入或翻页等轻量转场。每个多场景视频都要有转场，且不能在转场前把上一场景提前淡出。
+7. 不添加音频元素、TTS 或背景音乐，直到用户明确提出音频需求。
 
 ## 校验和渲染
 
@@ -125,6 +133,7 @@ compositions/
 npx hyperframes lint
 npx hyperframes validate
 npx hyperframes inspect --samples 15
+node <skill-dir>/scripts/check-character-reference.mjs --project .
 npx hyperframes render --output ../../renders/<slug>.mp4 --quality standard
 ```
 
@@ -143,6 +152,8 @@ npx hyperframes render --output ../../renders/<slug>.mp4 --quality standard
 
 同时核对 `material-plan.json`：已选素材在对应场景中可辨认地出现至少 1.5 秒；贴图通过局部裁切、短距离滑入和轻旋转平滑落位；文档、肖像和图表没有被错误裁切；最终框与 swept bbox 未进入插画安全框；相关可发布素材覆盖率达到 60% 或逐项说明例外；署名与 `ATTRIBUTION.md` 一致。
 
+出现小鸽钉时，把身份基准图与所有 `characters/` 角色层按统一可视高度排成 contact sheet，并按 `character-consistency.md` 核对连续头身轮廓、固定雾蓝、豆眼、短橙嘴、细腿、短翅和黄色斜挎包。结果逐场写入 `character-reference.json` 和 `QA.md`；整体风格相似但角色身份漂移仍判失败。
+
 ## 交付
 
-输出 `renders/<slug>.mp4`，并保留项目目录、`captions.srt`、`SCRIPT.md`、`timeline.json`、`material-plan.json`、`ATTRIBUTION.md`、`reveal-plan.json` 和逐对象覆盖结果所在的 `QA.md`。交付时说明时长、分辨率、字幕来源、场景数量、实际使用素材数量与覆盖率、贴图入场方式、B 档局部遮罩是否完成、完整性对象是否全部通过，以及 lint/validate/inspect 的结果。
+输出 `renders/<slug>.mp4`，并保留项目目录、`captions.srt`、`SCRIPT.md`、`timeline.json`、`character-reference.json`（出现小鸽钉时）、`material-plan.json`、`ATTRIBUTION.md`、`reveal-plan.json` 和逐对象覆盖结果所在的 `QA.md`。交付时说明时长、分辨率、字幕来源、场景数量、实际使用素材数量与覆盖率、贴图入场方式、小鸽钉身份参考与一致性结果、B 档局部遮罩是否完成、完整性对象是否全部通过，以及 lint/validate/inspect 的结果。

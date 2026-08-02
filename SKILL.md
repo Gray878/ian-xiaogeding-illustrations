@@ -1,6 +1,6 @@
 ---
 name: ian-xiaogeding-illustrations
-description: 生成 Ian 风格的中文正文配图，并把 SRT/TXT 字幕稿或中文文章转成彩色手绘错觉视频。用于中文文章、帖子、博客、Notion 文档、工作流文档、方法论、观点、脚本或字幕需要“怪诞”“小鸽钉”“手绘”“正文配图”“文章插图”“知识拼贴”“信息拼贴”“素材贴图”“视频知识板”“shot list”“去标题/改图”的任务。优先发现并复用与稿件配套的本地 materials 素材及 SOURCES.md，把可发布的照片、史料页、图表和 SVG 作为平滑入场的贴图层，再用确定性文字、手绘批注和按需 image_gen 补足视觉；视频必须使用 HyperFrames 与 HyperFrames CLI 直至交付 MP4。默认白底、彩色块面、细黑线和克制统一的配色；除非用户明确要求，不生成旁白或背景音频。
+description: 生成 Ian 风格的中文正文配图，并把 SRT/TXT 字幕稿或中文文章转成彩色手绘错觉视频。用于中文文章、帖子、博客、Notion 文档、工作流文档、方法论、观点、脚本或字幕需要“怪诞”“小鸽钉”“手绘”“正文配图”“文章插图”“知识拼贴”“信息拼贴”“素材贴图”“视频知识板”“shot list”“去标题/改图”的任务；在多图或多场景中锁定同一个小鸽钉 IP，防止角色造型漂移。优先发现并复用与稿件配套的本地 materials 素材及 SOURCES.md，把可发布的照片、史料页、图表和 SVG 作为平滑入场的贴图层，再用确定性文字、手绘批注和按需 image_gen 补足视觉；视频必须使用 HyperFrames 与 HyperFrames CLI 直至交付 MP4。默认白底、彩色块面、细黑线和克制统一的配色；除非用户明确要求，不生成旁白或背景音频。
 ---
 
 # Ian 手绘正文配图与视频
@@ -32,10 +32,10 @@ description: 生成 Ian 风格的中文正文配图，并把 SRT/TXT 字幕稿�
 
 - 所有任务：`references/style-dna.md`、`references/color-system.md`。
 - 输入附近存在 `materials/`、图片、图表、PDF 页面或 `SOURCES.md`，或用户要求复用/贴入素材时：`references/material-integration.md`。
-- 选择小鸽钉单核叙事时：`references/xiaogeding-ip.md`、`references/composition-patterns.md`、`references/prompt-template.md`、`references/qa-checklist.md`。
+- 选择小鸽钉单核叙事时：`references/xiaogeding-ip.md`、`references/character-consistency.md`、`references/composition-patterns.md`、`references/prompt-template.md`、`references/qa-checklist.md`。
 - 选择手绘知识拼贴时：`references/mode-knowledge-collage.md`、`references/prompt-collage.md`、`references/qa-knowledge-collage.md`。
 - 视频任务：额外读取 `references/hyperframes-video-contract.md`。
-- `assets/examples/` 仅作低频风格校准，不能复刻已有构图、文字、人物或标志。`15-knowledge-collage-user-reference.png` 只参考中心—卫星层级、留白和手绘节奏，不复制其中的主题、文案、logo 或水印；`16`–`18` 是当前彩色模式的正向视觉校准。`assets/legacy-monochrome/` 是归档旧构图，默认绝不读取或模仿；只有用户明确要求旧构图时才可查看其隐喻关系，仍不得继承其黑白配色。
+- `assets/examples/15`–`17` 仅作低频风格校准，不能复刻已有构图、文字、人物或标志。`15-knowledge-collage-user-reference.png` 只参考中心—卫星层级、留白和手绘节奏，不复制其中的主题、文案、logo 或水印。`18-xiaogeding-colorful-pipeline-repair.png` 是例外：选择小鸽钉模式时必须打开，并按 `character-consistency.md` 作为每次生图调用的真实角色身份参考；只锁定小鸽钉身份，不复制其中的梯子、插头、纸张或构图。`assets/legacy-monochrome/` 是归档旧构图，默认绝不读取或模仿；只有用户明确要求旧构图时才可查看其隐喻关系，仍不得继承其黑白配色。
 
 ## 工作流
 
@@ -67,6 +67,12 @@ description: 生成 Ian 风格的中文正文配图，并把 SRT/TXT 字幕稿�
 
 在内部生成简短路由表：`场景/段落 → 视觉命题 → 模式 → 选择理由`。执行时锁定该选择，不让另一模式的角色、构图或 QA 规则泄漏进来。对用户交付时仅简要说明每张图或场景采用的模式。
 
+### 2.5 锁定小鸽钉角色身份
+
+只要路由表中至少一个单元使用小鸽钉，就先执行 `references/character-consistency.md`。实际打开身份基准图，并在每一次小鸽钉生成或编辑调用中把图片作为图像输入；提示词里只有路径或文字描述不算。两张及以上配图或任何视频必须建立 `character-reference.json`，记录每个输出是否真实传入基准图以及身份 QA 结果。
+
+多场景不得分别做纯文字整图生图。默认先生成可复用的透明小鸽钉姿态层，再与场景、素材和确定性文字合成；每次都使用基准图，不能只用上一张输出递归参考。若当前工具不能接收参考图，必须改用已批准角色层、确定性 SVG/DOM 或暂停说明限制，不能接受角色漂移。
+
 ### 3. 形成配图或分镜策略
 
 先提取核心观点、认知转折和真正值得画的内容；不要平均配图。每个候选图写清：位置或 cue 范围、视觉命题、模式、核心意思、构图、主要元素、所用本地素材及贴图位置、短标注和配色角色（主色 / 辅色 / 风险色）。短文默认 1–3 张，文章默认 4–8 张，长文通常不超过 9 张。
@@ -75,11 +81,11 @@ description: 生成 Ian 风格的中文正文配图，并把 SRT/TXT 字幕稿�
 
 用户明确要求“生成 / 输出 / 做图 / 帮我生成”时，先按 `material-plan.json` 把可发布素材作为确定性图片层排进白纸画布；只有缺少语义主体、需要小鸽钉或需要补充手绘锚点时才使用内置 `image_gen`。不要让图像模型重绘必须保持真实的肖像、史料页面、图表、品牌标志或数据可视化。
 
-每张图都只围绕一个视觉命题；多张贴图也必须共同服务同一命题。读取并使用已锁定模式的提示词模板和 QA。不要为了满足中文准确率而让模型在画面内塞长段文字；关键数字、专有名词或必须逐字正确的文案，在静态图中以确定性文字层补上，在视频中使用 HTML 字幕/标签层。
+每张图都只围绕一个视觉命题；多张贴图也必须共同服务同一命题。读取并使用已锁定模式的提示词模板和 QA。小鸽钉模式必须使用真实参考图输入和独立角色层，保留固定浅雾蓝头身轮廓、豆眼、短橙嘴、细腿、短翅和芥黄色斜挎包，只改变姿态和任务道具。不要为了满足中文准确率而让模型在画面内塞长段文字；关键数字、专有名词或必须逐字正确的文案，在静态图中以确定性文字层补上，在视频中使用 HTML 字幕/标签层。
 
 ### 5. 生成视频：素材贴图 + B 档局部手绘揭示
 
-视频任务必须使用 HyperFrames 与 HyperFrames CLI，并遵守 `references/material-integration.md` 和 `references/hyperframes-video-contract.md`。先完成素材审计和模式路由，再制作贴图式英雄帧、`timeline.json`、`material-plan.json` 与 `reveal-plan.json`。`image_gen` 仅按需补充手绘角色或锚点，不得替代相关的可发布本地素材。
+视频任务必须使用 HyperFrames 与 HyperFrames CLI，并遵守 `references/material-integration.md` 和 `references/hyperframes-video-contract.md`。先完成素材审计、模式路由和小鸽钉身份锁，再制作贴图式英雄帧、`timeline.json`、`material-plan.json` 与 `reveal-plan.json`。`image_gen` 仅按需补充手绘角色或锚点，不得替代相关的可发布本地素材；小鸽钉优先保存为 `characters/` 下的独立透明层，不得让每张英雄帧重新设计角色。
 
 本地素材使用真正的 `<img>` / 内联 SVG 层放入页面，以局部裁切揭示、短距离滑入、轻微旋转回正和缩放落位形成贴纸感；不得把所有素材先烘焙进一张生成图。不要用整图擦除替代手绘。单核叙事依次揭示主结构、素材贴图、小鸽钉动作、关键物件、路径和批注；知识拼贴依次揭示中心锚点、关键素材贴图、最重要的卫星、其余卫星、少量关系箭头与标签。短 cue 优先更新字幕，长 cue 承担主要揭示；跨 cue 的动作保持连续。
 
@@ -89,8 +95,8 @@ description: 生成 Ian 风格的中文正文配图，并把 SRT/TXT 字幕稿�
 
 ### 6. 检查、迭代与保存
 
-使用已锁定模式的 QA 清单和素材集成 QA。静态图默认保存到 `assets/<article-slug>-illustrations/`，按 `01-topic-name.png` 编号；不要覆盖已有资产。视频必须在每个场景最后一次揭示完成后和场景结束前分别抽帧，逐个核对完整性对象与静态英雄帧；同时在每项素材入场的开始、中间、结束三处检查素材与插画安全框的交集，并核对字幕底边距。不能只检查画面中心或依赖肉眼扫一遍。视频项目使用 `video-projects/<slug>/`，最终视频保存到 `renders/<slug>.mp4`，并保留 `DESIGN.md`、字幕、时间表、`material-plan.json`、`ATTRIBUTION.md` 和揭示计划。
+使用已锁定模式的 QA 清单和素材集成 QA。静态图默认保存到 `assets/<article-slug>-illustrations/`，按 `01-topic-name.png` 编号；不要覆盖已有资产。多张小鸽钉输出先按统一可视高度生成角色 contact sheet，与基准图逐项比较固定身份特征；任一场景漂移就只重做角色层。包含小鸽钉的多图或视频项目在交付前运行 `node <skill-dir>/scripts/check-character-reference.mjs --project <project-dir>`。视频还必须在每个场景最后一次揭示完成后和场景结束前分别抽帧，逐个核对完整性对象与静态英雄帧；同时在每项素材入场的开始、中间、结束三处检查素材与插画安全框的交集，并核对字幕底边距。不能只检查画面中心或依赖肉眼扫一遍。视频项目使用 `video-projects/<slug>/`，最终视频保存到 `renders/<slug>.mp4`，并保留 `DESIGN.md`、字幕、时间表、`character-reference.json`、`material-plan.json`、`ATTRIBUTION.md` 和揭示计划。
 
 ## 输出口径
 
-策略输出简短而具体。生成后说明：生成数量、每张用途与模式、实际使用的本地素材数量、许可/署名处理、保存路径、最稳和可选的图；视频额外说明时长、分辨率、字幕来源、场景模式分布、素材覆盖率、贴图入场方式、B 档遮罩、完整性对象覆盖检查和校验结果。
+策略输出简短而具体。生成后说明：生成数量、每张用途与模式、实际使用的本地素材数量、许可/署名处理、保存路径、最稳和可选的图；包含小鸽钉时额外说明身份基准图是否真实传入、角色层保存位置和跨场景一致性 QA。视频还要说明时长、分辨率、字幕来源、场景模式分布、素材覆盖率、贴图入场方式、B 档遮罩、完整性对象覆盖检查和校验结果。
